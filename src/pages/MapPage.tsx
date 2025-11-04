@@ -1,196 +1,119 @@
-import { useEffect, useRef } from 'react';
-import * as d3 from 'd3';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
-interface D3IndiaMapProps {
-  onStateClick: (stateId: string) => void;
-}
+const stateData: Record<string, string[]> = {
+  "Jammu and Kashmir": ["Srinagar", "Gulmarg", "Pahalgam", "Sonmarg", "Dal Lake", "Leh"],
+  "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala", "Kasauli", "Kullu", "Spiti Valley"],
+  "Punjab": ["Amritsar", "Chandigarh", "Ludhiana", "Patiala", "Jalandhar"],
+  "Uttarakhand": ["Nainital", "Mussoorie", "Rishikesh", "Haridwar", "Dehradun", "Jim Corbett"],
+  "Haryana": ["Kurukshetra", "Panchkula", "Faridabad", "Gurgaon"],
+  "Uttar Pradesh": ["Agra", "Varanasi", "Lucknow", "Allahabad", "Mathura", "Vrindavan"],
+  "Rajasthan": ["Jaipur", "Udaipur", "Jodhpur", "Jaisalmer", "Bikaner", "Mount Abu"],
+  "Gujarat": ["Ahmedabad", "Dwarka", "Somnath", "Gir Forest", "Rann of Kutch", "Vadodara"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Ujjain", "Khajuraho", "Gwalior", "Sanchi"],
+  "Maharashtra": ["Mumbai", "Pune", "Aurangabad", "Nashik", "Lonavala", "Mahabaleshwar"],
+  "Chhattisgarh": ["Raipur", "Jagdalpur", "Bilaspur", "Chitrakoot Falls"],
+  "Odisha": ["Puri", "Bhubaneswar", "Konark", "Chilika Lake"],
+  "West Bengal": ["Kolkata", "Darjeeling", "Kalimpong", "Sundarbans", "Siliguri"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Deoghar", "Hazaribagh"],
+  "Bihar": ["Patna", "Bodh Gaya", "Nalanda", "Rajgir", "Vaishali"],
+  "Sikkim": ["Gangtok", "Pelling", "Lachung", "Yumthang Valley"],
+  "Assam": ["Guwahati", "Kaziranga", "Majuli", "Tezpur"],
+  "Arunachal Pradesh": ["Tawang", "Itanagar", "Ziro", "Bomdila"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
+  "Manipur": ["Imphal", "Loktak Lake", "Keibul Lamjao"],
+  "Mizoram": ["Aizawl", "Champhai", "Lunglei"],
+  "Tripura": ["Agartala", "Udaipur", "Unakoti"],
+  "Meghalaya": ["Shillong", "Cherrapunji", "Mawlynnong", "Dawki"],
+  "Andhra Pradesh": ["Visakhapatnam", "Tirupati", "Vijayawada", "Amaravati"],
+  "Telangana": ["Hyderabad", "Warangal", "Ramoji Film City"],
+  "Karnataka": ["Bangalore", "Mysore", "Coorg", "Hampi", "Gokarna", "Chikmagalur"],
+  "Kerala": ["Kochi", "Munnar", "Alleppey", "Thekkady", "Wayanad", "Kovalam"],
+  "Tamil Nadu": ["Chennai", "Madurai", "Rameswaram", "Kanyakumari", "Ooty", "Mahabalipuram"],
+  "Goa": ["Panaji", "Calangute", "Baga", "Anjuna", "Palolem", "Old Goa"],
+};
 
-const D3IndiaMap = ({ onStateClick }: D3IndiaMapProps) => {
-  const svgRef = useRef<SVGSVGElement>(null);
+const MapPage = () => {
+  const [selectedState, setSelectedState] = useState<string | null>(null);
 
-  // State name mapping to our state IDs
-  const stateNameToId: { [key: string]: string } = {
-    'Jammu and Kashmir': 'jammu-kashmir',
-    'Jammu & Kashmir': 'jammu-kashmir',
-    'Ladakh': 'ladakh',
-    'Himachal Pradesh': 'himachal-pradesh',
-    'Punjab': 'punjab',
-    'Uttarakhand': 'uttarakhand',
-    'Haryana': 'haryana',
-    'Delhi': 'delhi',
-    'NCT of Delhi': 'delhi',
-    'Rajasthan': 'rajasthan',
-    'Uttar Pradesh': 'uttar-pradesh',
-    'Bihar': 'bihar',
-    'West Bengal': 'west-bengal',
-    'Sikkim': 'sikkim',
-    'Arunachal Pradesh': 'arunachal-pradesh',
-    'Assam': 'assam',
-    'Nagaland': 'nagaland',
-    'Manipur': 'manipur',
-    'Mizoram': 'mizoram',
-    'Tripura': 'tripura',
-    'Meghalaya': 'meghalaya',
-    'Jharkhand': 'jharkhand',
-    'Odisha': 'odisha',
-    'Orissa': 'odisha',
-    'Chhattisgarh': 'chhattisgarh',
-    'Madhya Pradesh': 'madhya-pradesh',
-    'Gujarat': 'gujarat',
-    'Maharashtra': 'maharashtra',
-    'Goa': 'goa',
-    'Karnataka': 'karnataka',
-    'Telangana': 'telangana',
-    'Andhra Pradesh': 'andhra-pradesh',
-    'Tamil Nadu': 'tamil-nadu',
-    'Kerala': 'kerala',
-    'Puducherry': 'puducherry',
-    'Pondicherry': 'puducherry',
-    'Andaman and Nicobar': 'andaman-nicobar',
-    'Andaman & Nicobar Islands': 'andaman-nicobar',
-    'Andaman & Nicobar': 'andaman-nicobar',
-    'Lakshadweep': 'lakshadweep',
-    'Chandigarh': 'chandigarh',
-    'Dadra and Nagar Haveli and Daman and Diu': 'dadra-nagar-haveli-daman-diu',
-    'Daman and Diu': 'dadra-nagar-haveli-daman-diu',
-    'Dadra and Nagar Haveli': 'dadra-nagar-haveli-daman-diu'
+  const handleStateClick = (state: string) => {
+    setSelectedState(state);
   };
 
-  useEffect(() => {
-    if (!svgRef.current) return;
+  const handleBack = () => {
+    setSelectedState(null);
+  };
 
-    const svg = d3.select(svgRef.current);
-    const width = 1400;
-    const height = 800;
+  if (selectedState) {
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            className="mb-6 gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Map
+          </Button>
 
-    // Clear any existing content
-    svg.selectAll("*").remove();
-
-    // Set up projection centered on India
-    const projection = d3.geoMercator()
-      .center([82.8, 22])
-      .scale(1000)
-      .translate([width / 2, height / 2]);
-
-    const path = d3.geoPath().projection(projection);
-
-    // Create a group for the map
-    const g = svg.append("g");
-
-    // Load Indian states GeoJSON - using a reliable CDN source
-    const indiaStatesGeoJSON = 'https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson';
-
-    d3.json(indiaStatesGeoJSON).then((data: any) => {
-      // Draw states
-      g.selectAll("path")
-        .data(data.features)
-        .enter()
-        .append("path")
-        .attr("d", path as any)
-        .attr("fill", "hsl(var(--card))")
-        .attr("stroke", "hsl(var(--primary))")
-        .attr("stroke-width", 1.5)
-        .style("cursor", "pointer")
-        .on("mouseover", function() {
-          d3.select(this)
-            .attr("fill", "hsl(var(--accent))")
-            .attr("opacity", 0.8);
-        })
-        .on("mouseout", function() {
-          d3.select(this)
-            .attr("fill", "hsl(var(--card))")
-            .attr("opacity", 1);
-        })
-        .on("click", function(event, d: any) {
-          // Debug: log all properties
-          console.log('All properties:', d.properties);
-          
-          // Try various property name formats
-          const stateName = d.properties.st_nm || 
-                          d.properties.ST_NM || 
-                          d.properties.NAME_1 || 
-                          d.properties.name || 
-                          d.properties.Name ||
-                          d.properties.STATE ||
-                          d.properties.state;
-          
-          console.log('Clicked state:', stateName);
-          
-          if (stateName) {
-            const stateId = stateNameToId[stateName] || stateName.toLowerCase().replace(/\s+/g, '-');
-            console.log('State ID:', stateId);
-            
-            // Highlight clicked state
-            g.selectAll("path").attr("fill", "hsl(var(--card))");
-            d3.select(this)
-              .attr("fill", "hsl(var(--accent))")
-              .attr("opacity", 0.9);
-            
-            onStateClick(stateId);
-          } else {
-            console.error('Could not find state name in properties');
-          }
-        })
-        .append("title")
-        .text((d: any) => d.properties.st_nm || 
-                         d.properties.ST_NM || 
-                         d.properties.NAME_1 || 
-                         d.properties.name || 
-                         d.properties.Name ||
-                         d.properties.STATE ||
-                         d.properties.state || 'Unknown State');
-
-      // Add state labels
-      g.selectAll("text")
-        .data(data.features)
-        .enter()
-        .append("text")
-        .attr("transform", (d: any) => {
-          const centroid = path.centroid(d);
-          return `translate(${centroid})`;
-        })
-        .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
-        .attr("fill", "hsl(var(--primary))")
-        .attr("opacity", 0.9)
-        .attr("pointer-events", "none")
-        .style("font-weight", "600")
-        .style("text-shadow", "0 0 3px hsl(var(--background)), 0 0 3px hsl(var(--background))")
-        .text((d: any) => {
-          const fullName = d.properties.st_nm || 
-                          d.properties.ST_NM || 
-                          d.properties.NAME_1 || 
-                          d.properties.name || 
-                          d.properties.Name ||
-                          d.properties.STATE ||
-                          d.properties.state;
-          
-          if (!fullName) return '';
-          
-          // Abbreviate long names
-          if (fullName.length > 12) {
-            return fullName.split(' ').map((word: string) => word[0]).join('');
-          }
-          return fullName;
-        });
-    }).catch(error => {
-      console.error('Error loading GeoJSON:', error);
-    });
-
-  }, [onStateClick]);
+          <Card className="border-2">
+            <CardHeader className="bg-gradient-warm">
+              <CardTitle className="text-3xl">{selectedState}</CardTitle>
+              <p className="text-muted-foreground">Popular destinations to explore</p>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid sm:grid-cols-2 gap-3">
+                {stateData[selectedState]?.map((place, index) => (
+                  <div
+                    key={index}
+                    className="p-4 rounded-lg bg-accent/30 hover:bg-accent/50 transition-all border border-accent"
+                  >
+                    <h3 className="font-semibold text-lg">{place}</h3>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full animate-fade-in">
-      <div className="w-full mx-auto rounded-lg shadow-medium overflow-hidden bg-background" style={{ maxWidth: '1400px' }}>
-        <svg
-          ref={svgRef}
-          viewBox="0 0 1400 800"
-          className="w-full h-auto"
-          style={{ minHeight: '700px' }}
-        />
+    <div className="min-h-screen bg-background py-8 px-4">
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-4">Explore India by State</h1>
+          <p className="text-lg text-muted-foreground">
+            Click on any state to discover its top destinations
+          </p>
+        </div>
+
+        <Card className="border-2">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {Object.keys(stateData).sort().map((state) => (
+                <button
+                  key={state}
+                  onClick={() => handleStateClick(state)}
+                  className="p-4 rounded-lg text-left transition-all border-2 hover:scale-105 bg-primary hover:bg-primary/80 border-primary/30"
+                >
+                  <h3 className="font-semibold text-sm">{state}</h3>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <p>Interactive map visualization coming soon with geographical accuracy</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default D3IndiaMap;
+export default MapPage;
