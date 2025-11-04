@@ -1,71 +1,76 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mountain, Waves, Church, Home, Landmark, MapPin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin } from "lucide-react";
 
-const categoryData = {
-  mountains: {
-    icon: Mountain,
-    color: "bg-sky",
+const categories = [
+  {
+    id: "mountains",
+    name: "🏔️ Mountains",
     places: [
-      "Himalayan Range, Himachal Pradesh & Uttarakhand", "Ladakh, Jammu & Kashmir",
-      "Darjeeling, West Bengal", "Sikkim", "Munnar, Kerala",
-      "Ooty, Tamil Nadu", "Coorg, Karnataka", "Spiti Valley, Himachal Pradesh",
-      "Auli, Uttarakhand", "Tawang, Arunachal Pradesh", "Shillong, Meghalaya",
-      "Nainital, Uttarakhand"
-    ]
+      "Leh-Ladakh", "Manali", "Shimla", "Nainital", "Darjeeling",
+      "Auli", "Mussoorie", "Ooty", "Spiti Valley", "Munnar",
+      "Sikkim", "Coorg", "Tawang", "Shillong"
+    ],
   },
-  beaches: {
-    icon: Waves,
-    color: "bg-accent",
+  {
+    id: "beaches",
+    name: "🏖️ Beaches",
     places: [
-      "Goa Beaches (Calangute, Baga, Anjuna)", "Andaman Islands",
-      "Kerala Beaches (Kovalam, Varkala)", "Gokarna, Karnataka",
-      "Puri, Odisha", "Pondicherry", "Lakshadweep Islands",
-      "Tarkarli, Maharashtra", "Daman & Diu", "Marari Beach, Kerala",
-      "Radhanagar Beach, Andaman", "Kudle Beach, Karnataka"
-    ]
+      "Goa", "Andaman Islands", "Kerala Backwaters", "Gokarna", 
+      "Pondicherry", "Varkala", "Kovalam", "Puri", "Daman & Diu", "Lakshadweep"
+    ],
   },
-  temples: {
-    icon: Home,
-    color: "bg-secondary",
+  {
+    id: "temples",
+    name: "🛕 Temples",
     places: [
-      "Tirupati, Andhra Pradesh", "Varanasi, Uttar Pradesh", "Madurai, Tamil Nadu",
-      "Golden Temple, Amritsar", "Konark Sun Temple, Odisha", "Khajuraho, Madhya Pradesh",
-      "Somnath, Gujarat", "Rameshwaram, Tamil Nadu", "Dwarka, Gujarat",
-      "Jagannath Temple, Puri", "Meenakshi Temple, Madurai", "Shirdi, Maharashtra"
-    ]
+      "Varanasi", "Tirupati", "Golden Temple Amritsar", "Meenakshi Temple Madurai",
+      "Konark Sun Temple", "Somnath Temple", "Jagannath Temple Puri", 
+      "Kedarnath", "Badrinath", "Rameshwaram"
+    ],
   },
-  heritage: {
-    icon: Landmark,
-    color: "bg-primary",
+  {
+    id: "heritage",
+    name: "🏛️ Heritage",
     places: [
-      "Taj Mahal, Agra", "Red Fort, Delhi", "Qutub Minar, Delhi",
-      "Fatehpur Sikri, Uttar Pradesh", "Hampi, Karnataka", "Ajanta & Ellora Caves, Maharashtra",
-      "Konark Sun Temple, Odisha", "Khajuraho, Madhya Pradesh", "Sanchi Stupa, Madhya Pradesh",
-      "Mahabalipuram, Tamil Nadu", "Victoria Memorial, Kolkata", "Charminar, Hyderabad"
-    ]
+      "Taj Mahal Agra", "Hampi", "Ajanta Caves", "Ellora Caves",
+      "Khajuraho", "Fatehpur Sikri", "Mahabalipuram", "Sanchi Stupa"
+    ],
   },
-  mosques: {
-    icon: Church,
-    color: "bg-accent",
+  {
+    id: "historical",
+    name: "🏰 Historical",
     places: [
-      "Jama Masjid, Delhi", "Mecca Masjid, Hyderabad", "Taj-ul-Masjid, Bhopal",
-      "Jama Masjid, Agra", "Nizamuddin Dargah, Delhi", "Ajmer Sharif Dargah, Rajasthan",
-      "Haji Ali Dargah, Mumbai", "Gol Gumbaz, Karnataka", "Bara Imambara, Lucknow"
-    ]
+      "Red Fort Delhi", "Qutub Minar", "Jaipur Forts", "Mysore Palace",
+      "Victoria Memorial Kolkata", "Chittorgarh Fort", "Golconda Fort"
+    ],
   },
-  churches: {
-    icon: Church,
-    color: "bg-sky",
+  {
+    id: "mosques",
+    name: "🕌 Mosques",
     places: [
-      "Se Cathedral, Goa", "Basilica of Bom Jesus, Goa", "St. Francis Church, Kochi",
-      "Santa Cruz Basilica, Kochi", "Sacred Heart Cathedral, Delhi",
-      "St. Thomas Cathedral, Mumbai", "St. Paul's Cathedral, Kolkata",
-      "Velankanni Church, Tamil Nadu", "Medak Cathedral, Telangana"
-    ]
-  }
-};
+      "Jama Masjid Delhi", "Charminar Hyderabad", "Mecca Masjid Hyderabad",
+      "Taj-ul-Masajid Bhopal", "Haji Ali Dargah Mumbai", "Ajmer Sharif"
+    ],
+  },
+  {
+    id: "churches",
+    name: "⛪ Churches",
+    places: [
+      "Basilica of Bom Jesus Goa", "Se Cathedral Goa", 
+      "St. Thomas Cathedral Mumbai", "Medak Church Telangana", "St. Francis Church Kochi"
+    ],
+  },
+  {
+    id: "wildlife",
+    name: "🦁 Wildlife",
+    places: [
+      "Jim Corbett National Park", "Ranthambore National Park",
+      "Kaziranga National Park", "Bandhavgarh National Park", "Sundarbans"
+    ],
+  },
+];
 
 const Categories = () => {
   const [activeCategory, setActiveCategory] = useState("mountains");
@@ -73,50 +78,39 @@ const Categories = () => {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">Explore by Category</h1>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Explore by Categories</h1>
           <p className="text-lg text-muted-foreground">
             Discover destinations based on your interests
           </p>
         </div>
 
         <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-          <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 h-auto gap-2 bg-transparent">
-            {Object.entries(categoryData).map(([category, data]) => {
-              const Icon = data.icon;
-              return (
-                <TabsTrigger
-                  key={category}
-                  value={category}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 data-[state=active]:${data.color} transition-all`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="capitalize font-semibold text-sm">{category}</span>
-                </TabsTrigger>
-              );
-            })}
+          <TabsList className="flex flex-wrap justify-center gap-2 mb-8 bg-transparent h-auto p-0">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.id}
+                value={category.id}
+                className="px-4 py-2 text-sm font-semibold border-2 border-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground rounded-lg transition-all hover:scale-105"
+              >
+                {category.name}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          {Object.entries(categoryData).map(([category, data]) => (
-            <TabsContent key={category} value={category} className="mt-6">
+          {categories.map((category) => (
+            <TabsContent key={category.id} value={category.id} className="mt-6">
               <Card className="border-2">
-                <CardHeader className={`${data.color}/20`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full ${data.color} flex items-center justify-center`}>
-                      <data.icon className="w-6 h-6" />
-                    </div>
-                    <CardTitle className="text-2xl capitalize">{category}</CardTitle>
-                  </div>
-                </CardHeader>
                 <CardContent className="pt-6">
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {data.places.map((place, index) => (
+                  <h2 className="text-2xl font-bold mb-6 text-center">{category.name}</h2>
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {category.places.map((place, index) => (
                       <div
                         key={index}
-                        className={`p-4 rounded-lg ${data.color}/10 hover:${data.color}/20 transition-all border border-border`}
+                        className="p-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all border border-border hover:border-secondary"
                       >
                         <div className="flex items-start gap-2">
-                          <MapPin className="w-4 h-4 mt-1 shrink-0" />
+                          <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-secondary" />
                           <h3 className="font-semibold text-sm">{place}</h3>
                         </div>
                       </div>

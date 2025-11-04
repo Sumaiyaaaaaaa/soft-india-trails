@@ -6,7 +6,8 @@ import { Snowflake, Sun, Cloud, Leaf } from "lucide-react";
 const seasonData = {
   winter: {
     icon: Snowflake,
-    color: "bg-sky",
+    emoji: "❄️",
+    color: "secondary",
     places: [
       "Gulmarg, Kashmir", "Shimla, Himachal Pradesh", "Manali, Himachal Pradesh",
       "Auli, Uttarakhand", "Goa Beaches", "Rajasthan (Jaipur, Udaipur, Jaisalmer)",
@@ -17,7 +18,8 @@ const seasonData = {
   },
   summer: {
     icon: Sun,
-    color: "bg-secondary",
+    emoji: "☀️",
+    color: "primary",
     places: [
       "Ladakh", "Spiti Valley, Himachal Pradesh", "Nainital, Uttarakhand",
       "Mussoorie, Uttarakhand", "Darjeeling, West Bengal", "Ooty, Tamil Nadu",
@@ -28,7 +30,8 @@ const seasonData = {
   },
   monsoon: {
     icon: Cloud,
-    color: "bg-accent",
+    emoji: "🌧️",
+    color: "sky",
     places: [
       "Munnar, Kerala", "Wayanad, Kerala", "Coorg, Karnataka",
       "Cherrapunji, Meghalaya", "Mawsynram, Meghalaya", "Lonavala, Maharashtra",
@@ -39,7 +42,8 @@ const seasonData = {
   },
   autumn: {
     icon: Leaf,
-    color: "bg-primary",
+    emoji: "🍂",
+    color: "accent",
     places: [
       "Rishikesh, Uttarakhand", "Jaipur, Rajasthan", "Agra, Uttar Pradesh",
       "Khajuraho, Madhya Pradesh", "Orchha, Madhya Pradesh", "Mysore, Karnataka",
@@ -56,25 +60,30 @@ const Seasons = () => {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">Travel by Season</h1>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Travel by Season</h1>
           <p className="text-lg text-muted-foreground">
             Find the perfect destinations for every season in India
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-2 bg-transparent">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-transparent h-auto p-0">
             {Object.entries(seasonData).map(([season, data]) => {
               const Icon = data.icon;
+              const isActive = activeTab === season;
               return (
                 <TabsTrigger
                   key={season}
                   value={season}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 data-[state=active]:${data.color} transition-all`}
+                  className={`h-24 flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border-2 transition-all hover:scale-105 shadow-lg text-lg font-bold ${
+                    isActive 
+                      ? `bg-${data.color} text-${data.color}-foreground border-${data.color}` 
+                      : `border-${data.color} hover:bg-${data.color}/10`
+                  }`}
                 >
-                  <Icon className="w-6 h-6" />
-                  <span className="capitalize font-semibold">{season}</span>
+                  <span className="text-3xl">{data.emoji}</span>
+                  <span className="capitalize">{season}</span>
                 </TabsTrigger>
               );
             })}
@@ -83,27 +92,27 @@ const Seasons = () => {
           {Object.entries(seasonData).map(([season, data]) => (
             <TabsContent key={season} value={season} className="mt-6">
               <Card className="border-2">
-                <CardHeader className={`${data.color}/20`}>
+                <CardHeader className={`bg-${data.color}/20`}>
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full ${data.color} flex items-center justify-center`}>
-                      <data.icon className="w-6 h-6" />
+                    <div className={`w-16 h-16 rounded-full bg-${data.color} flex items-center justify-center text-3xl`}>
+                      {data.emoji}
                     </div>
                     <div>
-                      <CardTitle className="text-2xl capitalize">{season}</CardTitle>
-                      <CardDescription className="text-base mt-1">
+                      <CardTitle className="text-3xl capitalize">{season}</CardTitle>
+                      <CardDescription className="text-base mt-2">
                         {data.description}
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {data.places.map((place, index) => (
                       <div
                         key={index}
-                        className={`p-4 rounded-lg ${data.color}/10 hover:${data.color}/20 transition-all border border-border`}
+                        className={`p-5 rounded-xl bg-${data.color}/10 hover:bg-${data.color}/20 transition-all border-2 border-${data.color}/30 hover:border-${data.color} hover:shadow-md`}
                       >
-                        <h3 className="font-semibold">{place}</h3>
+                        <h3 className="font-semibold text-lg">{place}</h3>
                       </div>
                     ))}
                   </div>

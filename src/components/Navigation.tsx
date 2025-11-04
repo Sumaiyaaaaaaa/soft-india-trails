@@ -6,6 +6,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
+    { name: "Home", path: "/", icon: Globe },
     { name: "Map", path: "/map", icon: Map },
     { name: "Seasons", path: "/seasons", icon: Sparkles },
     { name: "Festivals", path: "/festivals", icon: Calendar },
@@ -47,12 +48,16 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              Sign In
-            </Button>
-            <Button size="sm" className="bg-sky hover:bg-sky/90">
-              Log In
-            </Button>
+            <Link to="/auth">
+              <Button variant="outline" size="lg" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground font-semibold">
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold">
+                Log In
+              </Button>
+            </Link>
           </div>
         </div>
 
