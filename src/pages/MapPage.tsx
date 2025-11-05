@@ -609,7 +609,7 @@ const MapPage = () => {
                   className="p-4 rounded-lg text-left transition-all border-2 hover:scale-105 bg-primary hover:bg-primary/80 border-primary/30 text-primary-foreground"
                 >
                   <h3 className="font-semibold text-sm">{state}</h3>
-                  <p className="text-xs opacity-80 mt-1">{stateData[state]?.length} places</p>
+                 
                 </button>
               ))}
             </div>
