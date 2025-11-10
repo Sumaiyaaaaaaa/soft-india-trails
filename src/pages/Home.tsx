@@ -1,15 +1,24 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Map, Calendar, Grid, MapPin } from "lucide-react";
+import { Search, Map, Calendar, Grid, MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { allPlacesData } from "@/data/placesData";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import heroBackground from "@/assets/india-hero-bg.jpg";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<typeof allPlacesData>([]);
+  const [selectedPlace, setSelectedPlace] = useState<typeof allPlacesData[0] | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -19,6 +28,12 @@ const Home = () => {
         place.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setSearchResults(results);
+      
+      // Auto-open first result if only one match
+      if (results.length === 1) {
+        setSelectedPlace(results[0]);
+        setDialogOpen(true);
+      }
     }
   };
 
@@ -26,6 +41,11 @@ const Home = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const handlePlaceClick = (place: typeof allPlacesData[0]) => {
+    setSelectedPlace(place);
+    setDialogOpen(true);
   };
 
   return (
@@ -69,7 +89,11 @@ const Home = () => {
             <h2 className="text-3xl font-bold mb-6">Search Results ({searchResults.length})</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {searchResults.map((place, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-accent/20">
+                <Card 
+                  key={index} 
+                  className="hover:shadow-lg transition-all cursor-pointer border-2 border-primary/20 hover:border-primary"
+                  onClick={() => handlePlaceClick(place)}
+                >
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold text-primary mb-2">{place.name}</h3>
                     {place.state && (
@@ -80,7 +104,10 @@ const Home = () => {
                     )}
                     <p className="text-sm mb-3">{place.description}</p>
                     {place.bestTime && (
-                      <p className="text-xs text-primary font-semibold">Best Time: {place.bestTime}</p>
+                      <p className="text-xs text-primary font-semibold flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Best Time: {place.bestTime}
+                      </p>
                     )}
                   </CardContent>
                 </Card>
@@ -89,6 +116,44 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      {/* Place Details Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold text-primary">
+              {selectedPlace?.name}
+            </DialogTitle>
+            {selectedPlace?.state && (
+              <DialogDescription className="text-base flex items-center gap-2 mt-2">
+                <MapPin className="w-4 h-4" />
+                {selectedPlace.state}
+              </DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <h4 className="font-semibold text-lg mb-2">About</h4>
+              <p className="text-muted-foreground">{selectedPlace?.description}</p>
+            </div>
+            {selectedPlace?.bestTime && (
+              <div>
+                <h4 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                  <Clock className="w-5 h-5" />
+                  Best Time to Visit
+                </h4>
+                <p className="text-muted-foreground">{selectedPlace.bestTime}</p>
+              </div>
+            )}
+            {selectedPlace?.category && (
+              <div>
+                <h4 className="font-semibold text-lg mb-2">Category</h4>
+                <p className="text-muted-foreground">{selectedPlace.category}</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* About India Section */}
       <section className="py-16 px-4 bg-background">
