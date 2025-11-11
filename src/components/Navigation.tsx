@@ -1,9 +1,37 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Map, Calendar, Sparkles, Grid3x3, Mail, Globe } from "lucide-react";
+import { Map, Calendar, Sparkles, Grid3x3, Mail, Globe, User, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully",
+    });
+    navigate("/");
+  };
 
   const navItems = [
     { name: "Home", path: "/", icon: Globe },
@@ -48,16 +76,39 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link to="/auth">
-              <Button variant="outline" size="lg" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground font-semibold">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold">
-                Log In
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Button>
+                <Button 
+                  size="lg" 
+                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold gap-2"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="outline" size="lg" className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground font-semibold">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold">
+                    Log In
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

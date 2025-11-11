@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Map, Calendar, Grid, MapPin, Clock, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { allPlacesData } from "@/data/placesData";
+import heroImage from "@/assets/india-hero-modern.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -20,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import heroBackground from "@/assets/india-hero-bg.jpg";
+import heroBackground from "@/assets/india-hero-modern.jpg";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");

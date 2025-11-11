@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Snowflake, Sun, Cloud, Leaf } from "lucide-react";
@@ -7,7 +7,7 @@ const seasonData = {
   winter: {
     icon: Snowflake,
     emoji: "❄️",
-    color: "secondary",
+    color: "primary",
     places: [
       "Gulmarg, Jammu & Kashmir - Ski resort with gondola rides",
       "Shimla, Himachal Pradesh - Colonial hill station with Mall Road",
@@ -30,7 +30,7 @@ const seasonData = {
   summer: {
     icon: Sun,
     emoji: "☀️",
-    color: "primary",
+    color: "secondary",
     places: [
       "Leh-Ladakh (Pangong Lake, Nubra Valley), Jammu & Kashmir - High-altitude desert landscapes",
       "Spiti Valley (Key Monastery, Chandratal Lake), Himachal Pradesh - Cold desert with ancient monasteries",
@@ -95,12 +95,157 @@ const seasonData = {
   }
 };
 
-const Seasons = () => {
-  const [activeTab, setActiveTab] = useState("winter");
+// Animation components
+const SnowAnimation = () => {
+  const snowflakes = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 3 + Math.random() * 2,
+  }));
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {snowflakes.map((flake) => (
+        <div
+          key={flake.id}
+          className="absolute text-white opacity-70"
+          style={{
+            left: `${flake.left}%`,
+            animation: `fall ${flake.duration}s linear infinite`,
+            animationDelay: `${flake.delay}s`,
+            fontSize: `${Math.random() * 10 + 10}px`,
+          }}
+        >
+          ❄
+        </div>
+      ))}
+      <style>{`
+        @keyframes fall {
+          0% { top: -10%; transform: translateX(0); }
+          100% { top: 100%; transform: translateX(${Math.random() * 40 - 20}px); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const SunriseAnimation = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full bg-gradient-to-b from-yellow-200 to-orange-400 animate-[rise_4s_ease-in-out_infinite]">
+        <div className="absolute inset-0 rounded-full bg-yellow-300 animate-pulse opacity-50"></div>
+      </div>
+      <style>{`
+        @keyframes rise {
+          0% { top: 100%; opacity: 0; }
+          50% { top: 10%; opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const RainAnimation = () => {
+  const raindrops = Array.from({ length: 100 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 2,
+    duration: 0.5 + Math.random() * 0.5,
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {raindrops.map((drop) => (
+        <div
+          key={drop.id}
+          className="absolute w-0.5 h-8 bg-gradient-to-b from-sky-400 to-transparent"
+          style={{
+            left: `${drop.left}%`,
+            animation: `rain ${drop.duration}s linear infinite`,
+            animationDelay: `${drop.delay}s`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes rain {
+          0% { top: -10%; opacity: 1; }
+          100% { top: 100%; opacity: 0.3; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const LeavesAnimation = () => {
+  const leaves = ['🍂', '🍁', '🍃'];
+  const fallingLeaves = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    emoji: leaves[Math.floor(Math.random() * leaves.length)],
+    left: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: 4 + Math.random() * 3,
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {fallingLeaves.map((leaf) => (
+        <div
+          key={leaf.id}
+          className="absolute text-2xl"
+          style={{
+            left: `${leaf.left}%`,
+            animation: `leafFall ${leaf.duration}s ease-in infinite`,
+            animationDelay: `${leaf.delay}s`,
+          }}
+        >
+          {leaf.emoji}
+        </div>
+      ))}
+      <style>{`
+        @keyframes leafFall {
+          0% { 
+            top: -10%; 
+            transform: translateX(0) rotate(0deg); 
+            opacity: 1;
+          }
+          100% { 
+            top: 100%; 
+            transform: translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg); 
+            opacity: 0.3;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const Seasons = () => {
+  const [activeTab, setActiveTab] = useState("winter");
+  const [showAnimation, setShowAnimation] = useState(false);
+
+  useEffect(() => {
+    setShowAnimation(false);
+    const timer = setTimeout(() => setShowAnimation(true), 100);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  const getAnimation = () => {
+    if (!showAnimation) return null;
+    switch (activeTab) {
+      case 'winter': return <SnowAnimation />;
+      case 'summer': return <SunriseAnimation />;
+      case 'monsoon': return <RainAnimation />;
+      case 'autumn': return <LeavesAnimation />;
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background py-8 px-4 relative">
+      {getAnimation()}
+      <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Travel by Season</h1>
           <p className="text-lg text-muted-foreground">
