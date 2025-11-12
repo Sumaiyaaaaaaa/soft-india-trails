@@ -117,31 +117,31 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[700px] flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: `url(${heroImage})`,
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-secondary/40 to-background/80"></div>
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-accent rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
 
-        <div className="relative z-10 container max-w-5xl mx-auto px-4 text-center space-y-10">
-          <div className="space-y-4">
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-background via-background/90 to-background/80 bg-clip-text text-transparent drop-shadow-2xl animate-fade-in tracking-tight">
-              Discover Incredible India
+        <div className="relative z-10 container max-w-6xl mx-auto px-6 text-center space-y-12">
+          <div className="space-y-6 animate-fade-in">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-background tracking-tight leading-tight">
+              Discover the Magic of
+              <span className="block mt-2 bg-gradient-to-r from-accent via-background to-accent bg-clip-text text-transparent">
+                Incredible India
+              </span>
             </h1>
-            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-transparent via-background to-transparent rounded-full"></div>
+            <div className="h-1 w-40 mx-auto bg-gradient-to-r from-transparent via-accent to-transparent rounded-full"></div>
           </div>
-          <p className="text-xl md:text-3xl text-background/95 max-w-3xl mx-auto drop-shadow-2xl animate-fade-in font-light leading-relaxed">
-            Explore diverse landscapes, rich culture, and ancient heritage across 28 states and 8 union territories
+          <p className="text-lg md:text-2xl text-background/90 max-w-4xl mx-auto font-light leading-relaxed animate-fade-in">
+            Journey through 28 diverse states and 8 union territories, each offering unique experiences, 
+            rich traditions, and breathtaking landscapes
           </p>
 
           {/* Enhanced Search Bar */}
-          <div className="relative max-w-3xl mx-auto animate-fade-in">
+          <div className="relative max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="relative group">
-              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-primary/70 h-6 w-6 group-focus-within:text-primary transition-colors" />
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-accent h-7 w-7 group-focus-within:text-primary transition-colors" />
               <Input
                 type="text"
                 placeholder="Search destinations, states, or categories..."
@@ -149,7 +149,7 @@ const Home = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
                 onFocus={() => setShowSuggestions(true)}
-                className="pl-14 pr-14 py-7 text-lg border-2 border-background/30 rounded-2xl shadow-2xl bg-background/95 backdrop-blur-md focus:border-primary/50 transition-all hover:shadow-xl"
+                className="pl-16 pr-16 py-8 text-lg border-2 border-background/40 rounded-3xl shadow-2xl bg-background text-foreground focus:border-accent focus:ring-4 focus:ring-accent/20 transition-all hover:shadow-xl hover:scale-[1.02]"
               />
               {searchQuery && (
                 <button
@@ -158,7 +158,7 @@ const Home = () => {
                     setSearchResults([]);
                     setShowSuggestions(false);
                   }}
-                  className="absolute right-5 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                  className="absolute right-6 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors text-xl font-bold"
                 >
                   ✕
                 </button>

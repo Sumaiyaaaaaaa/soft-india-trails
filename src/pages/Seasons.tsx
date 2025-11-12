@@ -158,43 +158,58 @@ const SnowAnimation = () => {
 };
 
 const SunriseAnimation = () => {
-  const rays = Array.from({ length: 20 }, (_, i) => ({
+  const rays = Array.from({ length: 16 }, (_, i) => ({
     id: i,
-    rotation: (i * 18),
+    rotation: (i * 22.5),
     delay: i * 0.1,
+    height: 100 + Math.random() * 80,
   }));
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-      <div className="relative">
-        {/* Sun */}
-        <div className="w-48 h-48 bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 rounded-full shadow-2xl animate-pulse"></div>
-        {/* Radiating rays */}
-        {rays.map((ray) => (
-          <div
-            key={ray.id}
-            className="absolute top-1/2 left-1/2 origin-bottom"
-            style={{
-              transform: `translate(-50%, -100%) rotate(${ray.rotation}deg)`,
-              animation: `radiate 2s ease-in-out ${ray.delay}s infinite`,
-            }}
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Central Sun with rays */}
+      <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
+        <div className="relative">
+          {/* Radiating sun rays */}
+          {rays.map((ray) => (
+            <div
+              key={ray.id}
+              className="absolute top-1/2 left-1/2 w-2 bg-gradient-to-t from-yellow-400/80 to-transparent origin-bottom"
+              style={{
+                height: `${ray.height}px`,
+                transform: `translate(-50%, -50%) rotate(${ray.rotation}deg)`,
+                animation: `pulse 2s ease-in-out ${ray.delay}s infinite`,
+              }}
+            />
+          ))}
+          {/* Sun circle */}
+          <div className="w-40 h-40 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 shadow-2xl shadow-yellow-400/60 relative z-10"
+            style={{ animation: 'pulse 3s ease-in-out infinite' }}
           >
-            <div className="w-3 h-40 bg-gradient-to-t from-yellow-400 via-orange-300 to-transparent rounded-full opacity-70"></div>
+            {/* Inner glow */}
+            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-yellow-200 to-orange-300 opacity-70"></div>
           </div>
-        ))}
+        </div>
       </div>
-      <style>{`
-        @keyframes radiate {
-          0%, 100% {
-            opacity: 0.3;
-            transform: translate(-50%, -100%) scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: translate(-50%, -100%) scale(1.1);
-          }
-        }
-      `}</style>
+      
+      {/* Additional ambient light rays */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div
+          key={`ambient-${i}`}
+          className="absolute opacity-20"
+          style={{
+            top: '12%',
+            left: '50%',
+            width: '6px',
+            height: `${120 + Math.random() * 100}px`,
+            background: 'linear-gradient(to bottom, rgba(255, 215, 0, 0.8), transparent)',
+            transform: `translateX(-50%) rotate(${i * 45}deg)`,
+            transformOrigin: 'top center',
+            animation: 'pulse 2.5s ease-in-out infinite',
+            animationDelay: `${i * 0.3}s`,
+          }}
+        />
+      ))}
     </div>
   );
 };
@@ -207,39 +222,46 @@ const RainAnimation = () => {
     duration: 0.5 + Math.random() * 0.5,
   }));
 
-  const clouds = Array.from({ length: 5 }, (_, i) => ({
+  const clouds = Array.from({ length: 6 }, (_, i) => ({
     id: i,
-    left: Math.random() * 80,
-    delay: i * 2,
+    left: 5 + (i * 15),
+    delay: i * 1.5,
+    size: 0.8 + Math.random() * 0.4,
   }));
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Clouds */}
+      {/* Realistic clouds */}
       {clouds.map((cloud) => (
         <div
           key={cloud.id}
-          className="absolute top-10"
+          className="absolute"
           style={{
             left: `${cloud.left}%`,
-            animation: `float 20s linear ${cloud.delay}s infinite`,
+            top: '5%',
+            transform: `scale(${cloud.size})`,
+            animation: `float 25s linear ${cloud.delay}s infinite`,
           }}
         >
-          <div className="relative">
-            <div className="w-20 h-12 bg-gray-400/80 rounded-full"></div>
-            <div className="absolute top-2 left-6 w-24 h-14 bg-gray-400/80 rounded-full"></div>
-            <div className="absolute top-1 left-14 w-18 h-12 bg-gray-400/80 rounded-full"></div>
-          </div>
+          <svg width="140" height="70" viewBox="0 0 140 70" className="opacity-80">
+            {/* Main cloud shape using overlapping ellipses */}
+            <ellipse cx="40" cy="40" rx="40" ry="28" fill="#94a3b8" />
+            <ellipse cx="75" cy="35" rx="35" ry="25" fill="#cbd5e1" />
+            <ellipse cx="100" cy="40" rx="30" ry="23" fill="#94a3b8" />
+            <ellipse cx="60" cy="48" rx="45" ry="22" fill="#cbd5e1" />
+            <ellipse cx="85" cy="50" rx="35" ry="20" fill="#e2e8f0" />
+          </svg>
         </div>
       ))}
-      {/* Rain drops */}
+      
+      {/* Rain drops falling from clouds */}
       {raindrops.map((drop) => (
         <div
           key={drop.id}
-          className="absolute w-0.5 h-8 bg-gradient-to-b from-blue-400 to-blue-600 opacity-60"
+          className="absolute w-0.5 h-8 bg-gradient-to-b from-blue-400 to-blue-600 opacity-60 rounded-full"
           style={{
             left: `${drop.left}%`,
-            top: '80px',
+            top: '90px',
             animation: `rain ${drop.duration}s linear ${drop.delay}s infinite`,
           }}
         ></div>
@@ -251,11 +273,11 @@ const RainAnimation = () => {
           }
         }
         @keyframes float {
-          0%, 100% {
+          0% {
             transform: translateX(0);
           }
-          50% {
-            transform: translateX(20vw);
+          100% {
+            transform: translateX(30vw);
           }
         }
       `}</style>
@@ -268,9 +290,9 @@ const LeavesAnimation = () => {
     id: i,
     left: Math.random() * 100,
     delay: Math.random() * 5,
-    duration: 5 + Math.random() * 5,
+    duration: 6 + Math.random() * 4,
     emoji: ['🍂', '🍁', '🍃'][Math.floor(Math.random() * 3)],
-    drift: -20 + Math.random() * 40,
+    drift: -30 + Math.random() * 60,
   }));
 
   return (
@@ -278,10 +300,10 @@ const LeavesAnimation = () => {
       {leaves.map((leaf) => (
         <div
           key={leaf.id}
-          className="absolute text-3xl"
+          className="absolute text-3xl opacity-80"
           style={{
             left: `${leaf.left}%`,
-            top: '-50px',
+            top: '-60px',
             animation: `leafFall ${leaf.duration}s ease-in-out ${leaf.delay}s infinite`,
             '--drift': `${leaf.drift}px`,
           } as React.CSSProperties}
@@ -296,17 +318,17 @@ const LeavesAnimation = () => {
             opacity: 1;
           }
           25% {
-            transform: translateY(25vh) translateX(var(--drift)) rotate(90deg);
+            transform: translateY(30vh) translateX(var(--drift)) rotate(90deg);
           }
           50% {
-            transform: translateY(50vh) translateX(0) rotate(180deg);
+            transform: translateY(60vh) translateX(0) rotate(180deg);
           }
           75% {
-            transform: translateY(75vh) translateX(calc(var(--drift) * -1)) rotate(270deg);
+            transform: translateY(85vh) translateX(calc(var(--drift) * -0.7)) rotate(270deg);
           }
           100% {
-            transform: translateY(100vh) translateX(0) rotate(360deg);
-            opacity: 0.5;
+            transform: translateY(110vh) translateX(0) rotate(360deg);
+            opacity: 0.3;
           }
         }
       `}</style>
