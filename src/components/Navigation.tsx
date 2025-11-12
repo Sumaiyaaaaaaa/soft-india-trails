@@ -77,24 +77,24 @@ const Navigation = () => {
 
           <div className="flex items-center gap-2">
             {user ? (
-              <>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold gap-2"
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => navigate("/profile")}
+                  variant="outline"
+                  className="border-2 hover:bg-primary hover:text-primary-foreground"
                 >
-                  <User className="w-4 h-4" />
+                  <User className="mr-2 h-4 w-4" />
                   Profile
                 </Button>
-                <Button 
-                  size="lg" 
-                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold gap-2"
+                <Button
                   onClick={handleLogout}
+                  variant="outline"
+                  className="border-2 hover:bg-destructive hover:text-destructive-foreground"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </Button>
-              </>
+              </div>
             ) : (
               <>
                 <Link to="/auth">

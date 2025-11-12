@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Map, Calendar, Grid, MapPin, Clock, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { allPlacesData } from "@/data/placesData";
-import heroImage from "@/assets/india-hero-modern.jpg";
+import heroImage from "@/assets/india-professional-hero.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -116,58 +116,80 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section with Background */}
-      <section 
-        className="relative py-32 px-4 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(rgba(52, 101, 109, 0.7), rgba(51, 68, 67, 0.8)), url(${heroBackground})`
-        }}
-      >
-        <div className="container mx-auto max-w-4xl text-center space-y-8">
-          <h1 className="text-5xl md:text-7xl font-bold text-white drop-shadow-lg">
-            Discover India
-          </h1>
-          <p className="text-xl md:text-2xl text-white/95 drop-shadow">
-            Your Gateway to Incredible Destinations
+      {/* Hero Section */}
+      <section className="relative min-h-[700px] flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url(${heroImage})`,
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-secondary/40 to-background/80"></div>
+        </div>
+
+        <div className="relative z-10 container max-w-5xl mx-auto px-4 text-center space-y-10">
+          <div className="space-y-4">
+            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-background via-background/90 to-background/80 bg-clip-text text-transparent drop-shadow-2xl animate-fade-in tracking-tight">
+              Discover Incredible India
+            </h1>
+            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-transparent via-background to-transparent rounded-full"></div>
+          </div>
+          <p className="text-xl md:text-3xl text-background/95 max-w-3xl mx-auto drop-shadow-2xl animate-fade-in font-light leading-relaxed">
+            Explore diverse landscapes, rich culture, and ancient heritage across 28 states and 8 union territories
           </p>
-          
-          {/* Enhanced Search Bar with Autocomplete */}
-          <div className="relative flex flex-col gap-2 max-w-2xl mx-auto">
-            <div className="flex gap-2 bg-white/95 p-3 rounded-xl shadow-2xl backdrop-blur">
+
+          {/* Enhanced Search Bar */}
+          <div className="relative max-w-3xl mx-auto animate-fade-in">
+            <div className="relative group">
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-primary/70 h-6 w-6 group-focus-within:text-primary transition-colors" />
               <Input
-                placeholder="Search places, cities, monuments..."
-                className="flex-1 border-0 text-lg focus-visible:ring-primary"
+                type="text"
+                placeholder="Search destinations, states, or categories..."
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowSuggestions(e.target.value.length >= 2);
-                }}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
+                onFocus={() => setShowSuggestions(true)}
+                className="pl-14 pr-14 py-7 text-lg border-2 border-background/30 rounded-2xl shadow-2xl bg-background/95 backdrop-blur-md focus:border-primary/50 transition-all hover:shadow-xl"
               />
-              <Button className="gap-2 px-6 hover:scale-105 transition-transform" onClick={handleSearch}>
-                <Search className="w-5 h-5" />
-                Search
-              </Button>
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchResults([]);
+                    setShowSuggestions(false);
+                  }}
+                  className="absolute right-5 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                >
+                  ✕
+                </button>
+              )}
             </div>
 
             {/* Autocomplete Suggestions */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border-2 border-primary/20 overflow-hidden z-50 animate-fade-in">
-                {suggestions.map((place, index) => (
-                  <button
-                    key={index}
-                    className="w-full px-4 py-3 text-left hover:bg-accent/20 transition-colors flex items-center gap-2 border-b border-border last:border-0"
-                    onClick={() => handleSuggestionClick(place)}
-                  >
-                    <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-                    <div className="flex-1">
-                      <p className="font-semibold text-foreground">{place.name}</p>
-                      <p className="text-xs text-muted-foreground">{place.state}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+            {showSuggestions && searchQuery && suggestions.length > 0 && (
+              <Card className="absolute top-full mt-3 w-full z-50 border-2 border-primary/20 shadow-2xl max-h-80 overflow-y-auto backdrop-blur-md bg-card/98">
+                <CardContent className="p-3">
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full text-left px-5 py-4 hover:bg-primary/10 rounded-xl transition-all flex items-center gap-4 border-b border-border/50 last:border-0 hover:shadow-md"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <MapPin className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-base">{suggestion.name}</div>
+                        <div className="text-sm text-muted-foreground flex items-center gap-2">
+                          <span>{suggestion.state}</span>
+                          <span className="text-primary">•</span>
+                          <span>{suggestion.category}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
