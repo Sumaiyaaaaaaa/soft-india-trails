@@ -158,58 +158,94 @@ const SnowAnimation = () => {
 };
 
 const SunriseAnimation = () => {
-  const rays = Array.from({ length: 16 }, (_, i) => ({
+  const mainRays = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    rotation: (i * 22.5),
+    rotation: (i * 30),
     delay: i * 0.1,
-    height: 100 + Math.random() * 80,
+  }));
+
+  const secondaryRays = Array.from({ length: 24 }, (_, i) => ({
+    id: i,
+    rotation: (i * 15),
+    delay: i * 0.05,
   }));
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {/* Central Sun with rays */}
       <div className="absolute top-20 left-1/2 transform -translate-x-1/2">
-        <div className="relative">
-          {/* Radiating sun rays */}
-          {rays.map((ray) => (
+        <div className="relative w-48 h-48">
+          {/* Long primary sun rays */}
+          {mainRays.map((ray) => (
             <div
-              key={ray.id}
-              className="absolute top-1/2 left-1/2 w-2 bg-gradient-to-t from-yellow-400/80 to-transparent origin-bottom"
+              key={`main-${ray.id}`}
+              className="absolute top-1/2 left-1/2"
               style={{
-                height: `${ray.height}px`,
+                width: '8px',
+                height: '280px',
+                background: 'linear-gradient(to top, rgba(255, 200, 0, 0.9), rgba(255, 230, 0, 0.4), transparent)',
                 transform: `translate(-50%, -50%) rotate(${ray.rotation}deg)`,
-                animation: `pulse 2s ease-in-out ${ray.delay}s infinite`,
+                transformOrigin: 'center bottom',
+                animation: `rayPulse 3s ease-in-out ${ray.delay}s infinite`,
+                borderRadius: '4px',
               }}
             />
           ))}
-          {/* Sun circle */}
-          <div className="w-40 h-40 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 shadow-2xl shadow-yellow-400/60 relative z-10"
-            style={{ animation: 'pulse 3s ease-in-out infinite' }}
+          
+          {/* Shorter secondary rays between main rays */}
+          {secondaryRays.map((ray) => (
+            <div
+              key={`secondary-${ray.id}`}
+              className="absolute top-1/2 left-1/2"
+              style={{
+                width: '4px',
+                height: '160px',
+                background: 'linear-gradient(to top, rgba(255, 215, 0, 0.7), rgba(255, 240, 100, 0.3), transparent)',
+                transform: `translate(-50%, -50%) rotate(${ray.rotation}deg)`,
+                transformOrigin: 'center bottom',
+                animation: `rayPulse 2.5s ease-in-out ${ray.delay}s infinite`,
+                borderRadius: '2px',
+              }}
+            />
+          ))}
+          
+          {/* Outer glow */}
+          <div className="absolute top-1/2 left-1/2 w-72 h-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-yellow-300/30 via-orange-300/20 to-transparent blur-2xl"></div>
+          
+          {/* Sun circle with layers */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-br from-yellow-200 via-yellow-400 to-orange-500 shadow-2xl shadow-yellow-400/80 z-10"
+            style={{ animation: 'sunPulse 4s ease-in-out infinite' }}
           >
-            {/* Inner glow */}
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-yellow-200 to-orange-300 opacity-70"></div>
+            {/* Inner bright core */}
+            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-orange-400 opacity-90"></div>
+            <div className="absolute inset-8 rounded-full bg-gradient-to-br from-white via-yellow-200 to-yellow-400 opacity-80"></div>
+            
+            {/* Corona effect */}
+            <div className="absolute -inset-6 rounded-full bg-gradient-to-br from-yellow-300/40 via-orange-300/30 to-transparent blur-xl"></div>
           </div>
         </div>
       </div>
       
-      {/* Additional ambient light rays */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={`ambient-${i}`}
-          className="absolute opacity-20"
-          style={{
-            top: '12%',
-            left: '50%',
-            width: '6px',
-            height: `${120 + Math.random() * 100}px`,
-            background: 'linear-gradient(to bottom, rgba(255, 215, 0, 0.8), transparent)',
-            transform: `translateX(-50%) rotate(${i * 45}deg)`,
-            transformOrigin: 'top center',
-            animation: 'pulse 2.5s ease-in-out infinite',
-            animationDelay: `${i * 0.3}s`,
-          }}
-        />
-      ))}
+      <style>{`
+        @keyframes rayPulse {
+          0%, 100% {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) rotate(var(--rotation)) scaleY(1);
+          }
+          50% {
+            opacity: 1;
+            transform: translate(-50%, -50%) rotate(var(--rotation)) scaleY(1.1);
+          }
+        }
+        @keyframes sunPulse {
+          0%, 100% {
+            box-shadow: 0 0 60px 20px rgba(255, 200, 0, 0.6);
+          }
+          50% {
+            box-shadow: 0 0 80px 30px rgba(255, 220, 0, 0.8);
+          }
+        }
+      `}</style>
     </div>
   );
 };
@@ -222,34 +258,52 @@ const RainAnimation = () => {
     duration: 0.5 + Math.random() * 0.5,
   }));
 
-  const clouds = Array.from({ length: 6 }, (_, i) => ({
+  const clouds = Array.from({ length: 5 }, (_, i) => ({
     id: i,
-    left: 5 + (i * 15),
-    delay: i * 1.5,
-    size: 0.8 + Math.random() * 0.4,
+    left: -10 + (i * 22),
+    delay: i * 2,
+    size: 0.9 + Math.random() * 0.3,
   }));
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Realistic clouds */}
+      {/* Realistic 3D-looking clouds */}
       {clouds.map((cloud) => (
         <div
           key={cloud.id}
           className="absolute"
           style={{
             left: `${cloud.left}%`,
-            top: '5%',
+            top: '8%',
             transform: `scale(${cloud.size})`,
-            animation: `float 25s linear ${cloud.delay}s infinite`,
+            animation: `float 30s linear ${cloud.delay}s infinite`,
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
           }}
         >
-          <svg width="140" height="70" viewBox="0 0 140 70" className="opacity-80">
-            {/* Main cloud shape using overlapping ellipses */}
-            <ellipse cx="40" cy="40" rx="40" ry="28" fill="#94a3b8" />
-            <ellipse cx="75" cy="35" rx="35" ry="25" fill="#cbd5e1" />
-            <ellipse cx="100" cy="40" rx="30" ry="23" fill="#94a3b8" />
-            <ellipse cx="60" cy="48" rx="45" ry="22" fill="#cbd5e1" />
-            <ellipse cx="85" cy="50" rx="35" ry="20" fill="#e2e8f0" />
+          <svg width="200" height="100" viewBox="0 0 200 100" className="opacity-90">
+            {/* Dark base for 3D effect */}
+            <ellipse cx="100" cy="70" rx="80" ry="20" fill="#64748b" opacity="0.4" />
+            
+            {/* Main cloud body with depth */}
+            <ellipse cx="50" cy="50" rx="48" ry="35" fill="#8892a0" />
+            <ellipse cx="50" cy="48" rx="48" ry="33" fill="#94a3b8" />
+            
+            <ellipse cx="95" cy="45" rx="45" ry="32" fill="#9ca6b5" />
+            <ellipse cx="95" cy="43" rx="45" ry="30" fill="#a8b3c4" />
+            
+            <ellipse cx="135" cy="48" rx="42" ry="30" fill="#8892a0" />
+            <ellipse cx="135" cy="46" rx="42" ry="28" fill="#94a3b8" />
+            
+            <ellipse cx="75" cy="58" rx="55" ry="25" fill="#9ca6b5" />
+            <ellipse cx="75" cy="56" rx="55" ry="23" fill="#cbd5e1" />
+            
+            <ellipse cx="115" cy="60" rx="50" ry="22" fill="#a8b3c4" />
+            <ellipse cx="115" cy="58" rx="50" ry="20" fill="#e2e8f0" />
+            
+            {/* Highlights for dimension */}
+            <ellipse cx="60" cy="40" rx="25" ry="18" fill="white" opacity="0.3" />
+            <ellipse cx="105" cy="38" rx="22" ry="15" fill="white" opacity="0.25" />
+            <ellipse cx="140" cy="42" rx="20" ry="12" fill="white" opacity="0.2" />
           </svg>
         </div>
       ))}
@@ -261,7 +315,7 @@ const RainAnimation = () => {
           className="absolute w-0.5 h-8 bg-gradient-to-b from-blue-400 to-blue-600 opacity-60 rounded-full"
           style={{
             left: `${drop.left}%`,
-            top: '90px',
+            top: '120px',
             animation: `rain ${drop.duration}s linear ${drop.delay}s infinite`,
           }}
         ></div>
@@ -274,10 +328,10 @@ const RainAnimation = () => {
         }
         @keyframes float {
           0% {
-            transform: translateX(0);
+            transform: translateX(0) scale(var(--scale));
           }
           100% {
-            transform: translateX(30vw);
+            transform: translateX(35vw) scale(var(--scale));
           }
         }
       `}</style>

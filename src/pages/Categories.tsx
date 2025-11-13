@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { MapPin, Info } from "lucide-react";
 
 const categories = [
   {
@@ -162,6 +163,28 @@ const categories = [
 
 const Categories = () => {
   const [activeCategory, setActiveCategory] = useState("mountains");
+  const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handlePlaceClick = (place: string) => {
+    setSelectedPlace(place);
+    setDialogOpen(true);
+  };
+
+  const getPlaceDetails = (place: string) => {
+    const parts = place.split(" - ");
+    const mainPart = parts[0];
+    const location = parts[1] || "";
+    
+    const nameMatch = mainPart.match(/^([^(]+)/);
+    const attractionsMatch = mainPart.match(/\(([^)]+)\)/);
+    
+    return {
+      name: nameMatch ? nameMatch[1].trim() : mainPart,
+      attractions: attractionsMatch ? attractionsMatch[1] : "",
+      location: location,
+    };
+  };
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -195,11 +218,13 @@ const Categories = () => {
                     {category.places.map((place, index) => (
                       <div
                         key={index}
-                        className="p-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all border border-border hover:border-secondary"
+                        onClick={() => handlePlaceClick(place)}
+                        className="p-3 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all border border-border hover:border-secondary cursor-pointer group"
                       >
                         <div className="flex items-start gap-2">
                           <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-secondary" />
-                          <h3 className="font-semibold text-sm">{place}</h3>
+                          <h3 className="font-semibold text-sm flex-1">{place}</h3>
+                          <Info className="w-4 h-4 mt-0.5 shrink-0 text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
                     ))}
@@ -209,6 +234,37 @@ const Categories = () => {
             </TabsContent>
           ))}
         </Tabs>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl flex items-center gap-2">
+                <MapPin className="w-6 h-6 text-secondary" />
+                {selectedPlace && getPlaceDetails(selectedPlace).name}
+              </DialogTitle>
+              <DialogDescription className="text-base space-y-4 pt-4">
+                {selectedPlace && (
+                  <>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Location</h4>
+                      <p className="text-muted-foreground">{getPlaceDetails(selectedPlace).location}</p>
+                    </div>
+                    {getPlaceDetails(selectedPlace).attractions && (
+                      <div>
+                        <h4 className="font-semibold text-foreground mb-2">Key Attractions</h4>
+                        <p className="text-muted-foreground">{getPlaceDetails(selectedPlace).attractions}</p>
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Category</h4>
+                      <p className="text-muted-foreground capitalize">{activeCategory}</p>
+                    </div>
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

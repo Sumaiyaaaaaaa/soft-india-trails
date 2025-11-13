@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Calendar, Info } from "lucide-react";
 
 const festivalData = {
   january: [
@@ -84,8 +85,15 @@ const festivalData = {
 
 const Festivals = () => {
   const [activeMonth, setActiveMonth] = useState("january");
+  const [selectedFestival, setSelectedFestival] = useState<{ name: string; region: string; city: string; description: string } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const months = Object.keys(festivalData);
+
+  const handleFestivalClick = (festival: { name: string; region: string; city: string; description: string }) => {
+    setSelectedFestival(festival);
+    setDialogOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -124,10 +132,14 @@ const Festivals = () => {
                     {festivalData[month as keyof typeof festivalData].map((festival, index) => (
                       <div
                         key={index}
-                        className="p-5 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-all border-2 border-secondary/30 hover:border-secondary hover:shadow-lg"
+                        onClick={() => handleFestivalClick(festival)}
+                        className="p-5 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-all border-2 border-secondary/30 hover:border-secondary hover:shadow-lg cursor-pointer group"
                       >
-                        <h3 className="font-bold text-xl mb-2 text-secondary">{festival.name}</h3>
-                        <p className="text-sm mb-3 text-foreground/80">{festival.description}</p>
+                        <div className="flex items-start justify-between">
+                          <h3 className="font-bold text-xl mb-2 text-secondary">{festival.name}</h3>
+                          <Info className="w-5 h-5 text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <p className="text-sm mb-3 text-foreground/80 line-clamp-2">{festival.description}</p>
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <span className="font-medium">📍 {festival.region}</span>
                           <span className="font-medium">🏙️ {festival.city}</span>
@@ -140,6 +152,39 @@ const Festivals = () => {
             </TabsContent>
           ))}
         </Tabs>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl flex items-center gap-2">
+                <Calendar className="w-6 h-6 text-primary" />
+                {selectedFestival?.name}
+              </DialogTitle>
+              <DialogDescription className="text-base space-y-4 pt-4">
+                {selectedFestival && (
+                  <>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">About the Festival</h4>
+                      <p className="text-muted-foreground">{selectedFestival.description}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Region</h4>
+                      <p className="text-muted-foreground">📍 {selectedFestival.region}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Best Places to Celebrate</h4>
+                      <p className="text-muted-foreground">🏙️ {selectedFestival.city}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Month</h4>
+                      <p className="text-muted-foreground capitalize">{activeMonth}</p>
+                    </div>
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
