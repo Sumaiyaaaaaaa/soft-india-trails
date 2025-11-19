@@ -128,7 +128,7 @@ const Home = () => {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-background tracking-tight leading-tight">
               Discover the Magic of
               <span className="block mt-2 bg-gradient-to-r from-accent via-background to-accent bg-clip-text text-transparent">
-                Destination Insights
+                Incredible India
               </span>
             </h1>
             <div className="h-1 w-40 mx-auto bg-gradient-to-r from-transparent via-accent to-transparent rounded-full"></div>
