@@ -35,7 +35,7 @@ const Navigation = () => {
 
   const navItems = [
     { name: "Home", path: "/", icon: Globe },
-    { name: "Map", path: "/map", icon: Map },
+    { name: "States", path: "/map", icon: Map },
     { name: "Seasons", path: "/seasons", icon: Sparkles },
     { name: "Festivals", path: "/festivals", icon: Calendar },
     { name: "Categories", path: "/categories", icon: Grid3x3 },
@@ -49,7 +49,7 @@ const Navigation = () => {
           <Link to="/" className="flex items-center gap-2 font-semibold text-xl">
             <Globe className="w-6 h-6 text-sky" />
             <span className="bg-gradient-to-r from-primary via-accent to-sky bg-clip-text text-transparent">
-              Incredible India
+              Destination Insights
             </span>
           </Link>
 
