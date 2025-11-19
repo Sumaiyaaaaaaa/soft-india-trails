@@ -49,7 +49,7 @@ const Navigation = () => {
           <Link to="/" className="flex items-center gap-2 font-semibold text-xl">
             <Globe className="w-6 h-6 text-sky" />
             <span className="bg-gradient-to-r from-primary via-accent to-sky bg-clip-text text-transparent">
-              Destination Insights
+              Season Scape
             </span>
           </Link>
 
