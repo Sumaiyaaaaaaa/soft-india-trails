@@ -73,7 +73,7 @@ const Auth = () => {
           <Link to="/" className="flex items-center gap-2 justify-center font-semibold text-2xl">
             <Globe className="w-8 h-8 text-secondary" />
             <span className="bg-gradient-to-r from-primary via-secondary to-sky bg-clip-text text-transparent">
-              Incredible India
+              Destination Insights
             </span>
           </Link>
           <CardTitle className="text-2xl">{isLogin ? "Welcome Back" : "Create Account"}</CardTitle>
